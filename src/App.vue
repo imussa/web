@@ -45,9 +45,12 @@
 
 <script>
 import HelloWorld from './components/HelloWorld';
+import mixins from './mixins'
 
 export default {
   name: 'App',
+
+  mixins: [mixins],
 
   components: {
     HelloWorld,
@@ -57,7 +60,6 @@ export default {
     //
     gituhbUrl: "https://github.com/login/oauth/authorize?client_id=43fdd91adee9e67a78ad&redirect_uri=https%3A%2F%2Fimussatools.herokuapp.com%2Foauth%2Fgithub_callback%2F&scope=user%3Aemail",
     // gituhbUrl: "http://localhost:8000/oauth/github_login/",
-    token: ''
   }),
 
   methods: {
@@ -70,10 +72,7 @@ export default {
       },false)
     },
     logout () {
-      this.token = ''
-    },
-    setToken (token) {
-      this.token = token
+      this.setToken('')
     }
   }
 };
