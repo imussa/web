@@ -2,150 +2,127 @@
   <v-container>
     <v-row class="text-center">
       <v-col cols="12">
-        <v-img
-          :src="require('../assets/logo.svg')"
-          class="my-3"
-          contain
-          height="200"
-        />
-      </v-col>
-
-      <v-col class="mb-4">
-        <h1 class="display-2 font-weight-bold mb-3">
-          Welcome to Vuetify
-        </h1>
-
-        <p class="subheading font-weight-regular">
-          For help and collaboration with other Vuetify developers,
-          <br>please join our online
-          <a
-            href="https://community.vuetifyjs.com"
-            target="_blank"
-          >Discord Community</a>
-        </p>
-      </v-col>
-
-      <v-col
-        class="mb-5"
-        cols="12"
-      >
-        <h2 class="headline font-weight-bold mb-3">
-          What's next?
-        </h2>
-
-        <v-row justify="center">
-          <a
-            v-for="(next, i) in whatsNext"
-            :key="i"
-            :href="next.href"
-            class="subheading mx-3"
-            target="_blank"
-          >
-            {{ next.text }}
-          </a>
-        </v-row>
-      </v-col>
-
-      <v-col
-        class="mb-5"
-        cols="12"
-      >
-        <h2 class="headline font-weight-bold mb-3">
-          Important Links
-        </h2>
-
-        <v-row justify="center">
-          <a
-            v-for="(link, i) in importantLinks"
-            :key="i"
-            :href="link.href"
-            class="subheading mx-3"
-            target="_blank"
-          >
-            {{ link.text }}
-          </a>
-        </v-row>
-      </v-col>
-
-      <v-col
-        class="mb-5"
-        cols="12"
-      >
-        <h2 class="headline font-weight-bold mb-3">
-          Ecosystem
-        </h2>
-
-        <v-row justify="center">
-          <a
-            v-for="(eco, i) in ecosystem"
-            :key="i"
-            :href="eco.href"
-            class="subheading mx-3"
-            target="_blank"
-          >
-            {{ eco.text }}
-          </a>
-        </v-row>
+        <v-simple-table>
+          <template v-slot:default>
+            <thead>
+              <tr>
+                <th class="text-left">平台</th>
+                <th class="text-left">账号</th>
+                <th class="text-left">密码</th>
+                <th class="text-left">描述</th>
+                <th class="text-left">操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(item, i) in list" :key="i">
+                <td class="text-left">{{item.platform}}</td>
+                <td class="text-left">{{item.account}}</td>
+                <td class="text-left">{{item.password}}</td>
+                <td class="text-left">{{item.description}}</td>
+                <td class="text-left">
+                  <v-btn icon><v-icon>mdi-lead-pencil</v-icon></v-btn>
+                  <v-btn icon @click="delete_item(item.url)"><v-icon>mdi-delete</v-icon></v-btn>
+                </td>
+              </tr>
+              <tr>
+                <td class="pt-5">
+                  <v-text-field outlined dense label="平台" v-model="record.platform"></v-text-field>
+                </td>
+                <td class="pt-5">
+                  <v-text-field outlined dense label="账号" v-model="record.account"></v-text-field>
+                </td>
+                <td class="pt-5">
+                  <v-text-field outlined dense label="密码" v-model="record.password"></v-text-field>
+                </td>
+                <td class="pt-5">
+                  <v-textarea outlined dense rows="1" label="描述" v-model="record.description"></v-textarea>
+                </td>
+                <td>
+                  <v-btn color="primary" @click="create_item">新建</v-btn>
+                </td>
+              </tr>
+            </tbody>
+          </template>
+        </v-simple-table>
       </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script>
+import mixins from '../mixins'
+import {listMixin} from '../mixins'
   export default {
     name: 'HelloWorld',
 
+    mixins: [mixins, listMixin],
+
+    model: {
+      prop: 'list',
+      event: 'change'
+    },
+
+    props: {
+      list: {
+        type: Array,
+        default: ()=>{
+          []
+        }
+      }
+    },
+
     data: () => ({
-      ecosystem: [
-        {
-          text: 'vuetify-loader',
-          href: 'https://github.com/vuetifyjs/vuetify-loader',
-        },
-        {
-          text: 'github',
-          href: 'https://github.com/vuetifyjs/vuetify',
-        },
-        {
-          text: 'awesome-vuetify',
-          href: 'https://github.com/vuetifyjs/awesome-vuetify',
-        },
-      ],
-      importantLinks: [
-        {
-          text: 'Documentation',
-          href: 'https://vuetifyjs.com',
-        },
-        {
-          text: 'Chat',
-          href: 'https://community.vuetifyjs.com',
-        },
-        {
-          text: 'Made with Vuetify',
-          href: 'https://madewithvuejs.com/vuetify',
-        },
-        {
-          text: 'Twitter',
-          href: 'https://twitter.com/vuetifyjs',
-        },
-        {
-          text: 'Articles',
-          href: 'https://medium.com/vuetify',
-        },
-      ],
-      whatsNext: [
-        {
-          text: 'Explore components',
-          href: 'https://vuetifyjs.com/components/api-explorer',
-        },
-        {
-          text: 'Select a layout',
-          href: 'https://vuetifyjs.com/layout/pre-defined',
-        },
-        {
-          text: 'Frequently Asked Questions',
-          href: 'https://vuetifyjs.com/getting-started/frequently-asked-questions',
-        },
-      ],
+      //
+      record: {
+        platform: '',
+        account: '',
+        password: '',
+        description: ''
+      }
     }),
+
+    methods: {
+      create_item () {
+        let vm = this
+        let instance = vm.$http.create({
+          headers: {
+            'Authorization': 'token ' + vm.token
+          }
+        })
+        instance.post('https://imussatools.herokuapp.com/api/records/',vm.record)
+        .then(res => {
+          vm.createItem(vm.list, res.data)
+          vm.record.platform = ''
+          vm.record.account = ''
+          vm.record.password = ''
+          vm.record.description = ''
+        })
+        .catch(err => {
+          console.log(err)
+          vm.record.platform = ''
+          vm.record.account = ''
+          vm.record.password = ''
+          vm.record.description = ''
+        })
+        console.log('create a new item')
+      },
+      delete_item (url) {
+        let vm = this
+        let instance = vm.$http.create({
+          headers: {
+            'Authorization': 'token ' + vm.token
+          }
+        })
+        instance.delete(url)
+        .then(() => {
+          let index = vm.list.findIndex(item => item.url==url)
+          vm.removeItemByIndex(vm.list, index)
+        })
+        .catch(err => {
+          console.log(err)
+        })
+        console.log('delete a item')
+      }
+    }
   }
 </script>
