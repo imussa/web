@@ -51,11 +51,11 @@
 
 <script>
 import mixins from '../mixins'
-import {listMixin} from '../mixins'
+import {listMixin, requestMixin} from '../mixins'
   export default {
     name: 'HelloWorld',
 
-    mixins: [mixins, listMixin],
+    mixins: [mixins, listMixin, requestMixin],
 
     model: {
       prop: 'list',
@@ -84,11 +84,7 @@ import {listMixin} from '../mixins'
     methods: {
       create_item () {
         let vm = this
-        let instance = vm.$http.create({
-          headers: {
-            'Authorization': 'token ' + vm.token
-          }
-        })
+        let instance = vm.createTokenRequest(vm.token)
         instance.post('https://imussatools.herokuapp.com/api/records/',vm.record)
         .then(res => {
           vm.createItem(vm.list, res.data)
@@ -108,11 +104,7 @@ import {listMixin} from '../mixins'
       },
       delete_item (url) {
         let vm = this
-        let instance = vm.$http.create({
-          headers: {
-            'Authorization': 'token ' + vm.token
-          }
-        })
+        let instance = vm.createTokenRequest(vm.token)
         instance.delete(url)
         .then(() => {
           let index = vm.list.findIndex(item => item.url==url)

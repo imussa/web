@@ -5,12 +5,14 @@ import {createItem, updateItem, removeItem, removeItemByIndex} from './arrayList
 export default {
     computed: {
         ...mapState([
-            'token'
+            'token',
+            'username'
         ])
     },
     methods: {
         ...mapMutations([
-            'setToken'
+            'setToken',
+            'setUsername'
         ])
     }
 }
@@ -21,5 +23,18 @@ export const listMixin = {
         updateItem,
         removeItem,
         removeItemByIndex
+    }
+}
+
+export const requestMixin = {
+    methods: {
+        createTokenRequest (token) {
+            return this.$http.create({
+                headers: {
+                    'Authorization': token
+                }
+            })
+
+        }
     }
 }
